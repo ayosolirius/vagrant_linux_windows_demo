@@ -1,129 +1,130 @@
-# **Hands-on Vagrant: Linux and Windows Server Integration on Apple Silicon**
+# **Hands-on Vagrant - Linux and Windows Server Integration on Apple Silicon and Intel Macs**
 
-This documentation provides a comprehensive guide to setting up and managing virtual machines (VMs) using **Vagrant** on Apple Silicon (M1/M2) and Intel Macs. It covers critical steps such as setting up Windows and Linux VMs, integrating Linux machines with Active Directory (AD), and managing networking across VMs. A particular focus is placed on ensuring stable **network connectivity** and configuring **static IP addresses** to prevent domain integration and cross-machine communication issues.
+This comprehensive guide will help you create and manage virtual machines (VMs) using **Vagrant** on **Apple Silicon (M1/M2)** and **Intel Macs**. You'll learn how to configure **Linux and Windows Server environments**, integrate Linux VMs into a **Windows Active Directory (AD) domain**, maintain **network connectivity**, and configure **static IPs** to ensure stability and consistent communication between VMs.
+
+By the end of this guide, you will:
+
+1. Understand what Vagrant is and why you should use it.
+2. Install and configure Vagrant and necessary providers on your machine.
+3. Set up and manage virtual environments for both Linux and Windows.
+4. Configure and integrate Linux VMs with Windows AD.
+5. Maintain stable network connectivity using static IP addresses.
+6. Troubleshoot common issues.
 
 ---
 
-## **1. Vagrant on Apple Silicon: Challenges and Solutions**
+## **1. What is Vagrant?**
 
-Apple Silicon introduces some challenges when running specific virtualised environments like **Windows Server** due to the ARM64 architecture. To overcome these issues, choosing the right virtualisation platform is essential.
+**Vagrant** is an open-source tool for building and managing virtualised development environments. It allows you to automate the setup of virtual machines, ensuring that your development environment is consistent across different machines and platforms.
 
-### **Using UTM for Windows Server on M1 Macs**
+### **Why Use Vagrant?**
 
-Since **Windows Server** does not natively run on Apple Silicon with tools like VMware Fusion or VirtualBox, the recommended solution is to use **UTM**, an open-source virtual machine manager for Apple Silicon. UTM offers emulation capabilities that allow Windows Server to run smoothly on M1/M2 processors.
+- **Automation**: It simplifies the creation of virtual machines by automating the setup process.
+- **Consistency**: Ensures that the same environment is recreated every time, preventing "it works on my machine" issues.
+- **Portability**: Vagrant can create and manage virtual machines with multiple providers, such as VMware Fusion, VirtualBox, and UTM.
 
-### **Steps to Install and Configure UTM for Windows Server**
+---
 
-Follow this [guide]([https://tcsfiles.blob.core.windows.net/documents/AIST3720Notes/WindowsServeronanM1Mac.html#:~:text=Configure the VM&text=In UTM choose Create a,for the Windows Server installer .)](https://tcsfiles.blob.core.windows.net/documents/AIST3720Notes/WindowsServeronanM1Mac.html#:~:text=Configure%20the%20VM&text=In%20UTM%20choose%20Create%20a,for%20the%20Windows%20Server%20installer%20.)) to install **Windows Server** on a Mac with an M1 processor using UTM:
+## **2. Installing Vagrant and Providers**
 
-1. **Download UTM** from the [official website](https://mac.getutm.app/).
-2. Create a new VM in UTM and select the **Windows Server ISO**.
-3. Configure the VM with enough **RAM** and **CPU resources** for optimal performance.
-4. Follow the instructions to install and configure **Windows Server** within UTM.
-
-### **Why UTM?**
-
-- **Windows Server** is not natively supported on M1 Macs via **VMware Fusion** or **VirtualBox**.
-- UTM provides stable emulation for Windows environments but requires proper configuration to avoid issues during setup.
-
-
-## **Getting Started: Installing Vagrant and Providers**
-
-Before you can create VMs, you need to install Vagrant and a **provider** (the software Vagrant uses to manage VMs). The provider depends on whether you’re using an **Apple Silicon** Mac or an **Intel** Mac.
+Before creating virtual machines, you need to install Vagrant and a **provider**—the software that Vagrant uses to create and manage VMs. The choice of provider depends on whether you’re using an **Apple Silicon** Mac or an **Intel Mac**.
 
 ### **A. Installing Vagrant**
 
-### **Steps to Install Vagrant on macOS**
+### **Steps to Install Vagrant on macOS:**
 
-1. **Install Homebrew** (a package manager for macOS):
+1. **Install Homebrew** (a package manager for macOS) if you don’t already have it:
     
-    ```
+    ```bash
     /bin/bash -c "$(curl -fsSL <https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh>)"
     
     ```
     
 2. **Install Vagrant**:
     
-    ```
+    ```bash
     brew install vagrant
     
     ```
     
 3. **Verify the installation**:
     
-    ```
+    ```bash
     vagrant --version
     
     ```
     
-    You should see the installed version of Vagrant, confirming that it’s ready to use.
+    You should see the version of Vagrant installed, confirming that it’s ready to use.
     
 
 ---
 
 ### **B. Choosing a Provider**
 
-A **provider** is the tool Vagrant uses to create and run your VMs. The choice of provider depends on whether you have an **Apple Silicon** or **Intel** Mac.
+A **provider** is the tool Vagrant uses to create and manage your virtual machines. The choice of provider depends on whether you are using an **Apple Silicon** or **Intel** Mac.
 
 ### **1. For Apple Silicon (M1/M2 Macs): Use VMware Fusion or UTM**
 
-- **VMware Fusion** is a popular provider that works on Apple Silicon, though it doesn’t fully support **Windows Server** on M1/M2 Macs.
-- **UTM** is the recommended provider for running **Windows Server** on Apple Silicon, as it can emulate the x86 architecture needed for Windows environments.
+- **VMware Fusion** is widely used on Apple Silicon but does not fully support **Windows Server**.
+- **UTM** is recommended for emulating **Windows Server** on Apple Silicon because it can handle x86 emulation on ARM-based systems.
 
 ### **Installing VMware Fusion (for Apple Silicon)**:
 
 1. **Install VMware Fusion** via Homebrew:
     
-    ```
+    ```bash
     brew install vmware-fusion
     
     ```
     
- **Install the Vagrant plugin** for VMware Fusion:
+2. **Install the Vagrant plugin** for VMware Fusion:
     
-    ```
+    ```bash
     vagrant plugin install vagrant-vmware-desktop
     
     ```
     
-    You’re now ready to use VMware Fusion as a provider with Vagrant on Apple Silicon.
+    You’re now ready to use **VMware Fusion** with Vagrant on Apple Silicon.
     
 
 ### **Using UTM for Windows Server on Apple Silicon**:
 
-**UTM** is an open-source virtual machine manager for Apple Silicon that emulates x86 Windows environments. To install and configure Windows Server on UTM, follow [this guide](https://tcsfiles.blob.core.windows.net/documents/AIST3720Notes/WindowsServeronanM1Mac.html).
+**UTM** is an open-source virtual machine manager for Apple Silicon that emulates x86 environments like **Windows Server**. To set up and configure **Windows Server** on UTM, follow [this guide](https://tcsfiles.blob.core.windows.net/documents/AIST3720Notes/WindowsServeronanM1Mac.html).
 
 ---
 
 ### **2. For Intel Macs: Use VMware Fusion or VirtualBox**
 
-- Intel-based Macs can use both **VMware Fusion** and **VirtualBox** as providers. Both options work well with Vagrant.
+- Intel-based Macs support both **VMware Fusion** and **VirtualBox**, and both work well with Vagrant.
 
 ### **Installing VirtualBox (for Intel Macs)**:
 
-- **Install VirtualBox**:
+1. **Install VirtualBox**:
     
-    ```
+    ```bash
     brew install --cask virtualbox
     
     ```
     
-- **Verify the installation**:
+2. **Verify the installation**:
     
-    ```
+    ```bash
     vboxmanage --version
     
     ```
     
-    You’re now ready to use VirtualBox as a provider for Vagrant.
+    This will confirm that VirtualBox is installed and ready to use with Vagrant.
+    
 
 ---
 
-## **2. Setting Up Vagrant on M1 for Linux VMs**
+## **3. Creating Virtual Machines (VMs) with Vagrant**
 
-For virtualizing Linux on Apple Silicon, **VMware Fusion** is the recommended provider for Vagrant. Below is a sample **Vagrantfile** and a provisioning script to set up and configure multiple **Ubuntu VMs** on M1 while maintaining reliable network connectivity.
+With **Vagrant** and a provider installed, you can now create and manage virtual machines. We’ll set up both **Linux and Windows Server VMs**, configure network settings, and ensure that they work together seamlessly.
 
-### **Vagrantfile for Ubuntu VMs on M1**
+### **A. Writing Your First Vagrantfile**
+
+The **Vagrantfile** is the configuration file that tells Vagrant how to set up your virtual machines. Below is an example **Vagrantfile** that creates three **Ubuntu VMs** and networks them together. These VMs will have static IP addresses, allowing them to communicate with each other and the Windows Server domain.
 
 ```ruby
 # -*- mode: ruby -*-
@@ -137,19 +138,19 @@ Vagrant.configure("2") do |config|
   config.ssh.username = "vagrant"
   config.ssh.password = "vagrant"
 
-  # Ubuntu clients
+  # Define Ubuntu clients
   (1..3).each do |i|
     config.vm.define "ubuntu#{i}", autostart: true do |node|
       node.vm.box = "bento/ubuntu-22.04"
       node.vm.hostname = "ubuntu#{i}"
-      node.vm.network "public_network", ip: "192.168.0.#{10+i}" # Static IP for each VM
+      node.vm.network "public_network", ip: "192.168.0.#{10+i}"  # Static IP for each VM
       node.vm.provider "vmware_fusion" do |v|
         v.vmx["memsize"] = "1024"
         v.vmx["numvcpus"] = "1"
         v.gui = true
       end
 
-      # Provision the VM
+      # Provision the VM (we’ll add the provisioning script later)
       node.vm.provision "shell", path: "provision_ubuntu.sh"
     end
   end
@@ -157,18 +158,46 @@ end
 
 ```
 
-### **Network Considerations:**
+### **Explanation of Key Parts**:
 
-- **Public Network:** Each VM is assigned a **static IP** to ensure that it does not change, maintaining a stable connection between VMs and preventing issues with **Active Directory domain joining** or other network services.
-- Ensuring VMs can **communicate with each other and external networks** is essential when configuring services like **AD**.
+- **Vagrant.configure("2")**: This defines the Vagrant configuration language version.
+- **config.vm.define**: Defines the virtual machines, here named `ubuntu1`, `ubuntu2`, and `ubuntu3`.
+- **Static IPs**: Each VM is given a static IP (e.g., `192.168.0.11`, `192.168.0.12`, etc.) to ensure stable connectivity, which is essential for services like **Active Directory**.
+- **VM Provider**: The provider is specified as **VMware Fusion** in this example, but you can use **VirtualBox** if running on an Intel Mac.
+
+### **B. Running the VMs**
+
+To create and start your VMs based on the configuration in your **Vagrantfile**, run the following command:
+
+```bash
+vagrant up
+
+```
+
+Once the VMs are running, you can access them using SSH:
+
+```bash
+vagrant ssh ubuntu1
+
+```
+
+This will log you into the first Ubuntu VM.
 
 ---
 
-## **3. Provisioning Script for Ubuntu VMs (provision_ubuntu.sh)**
+## **4. Automating Configuration with Provisioning**
 
-The provisioning script sets up each Ubuntu VM, installs required packages, and ensures it can join the **AD domain** while maintaining **network stability**.
+To make the process of setting up the VMs faster and easier, we can automate configuration using a **provisioning script**. This script will:
 
-```
+- Update the system.
+- Install necessary packages for joining an **Active Directory** domain.
+- Configure **DNS** to point to the **Windows Server** domain controller.
+
+### **Provisioning Script (provision_ubuntu.sh)**
+
+Here’s the provisioning script that will configure your Ubuntu VMs to join the AD domain.
+
+```bash
 #!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status
@@ -191,11 +220,8 @@ sudo apt-get autoclean
 
 # Install necessary packages for AD domain join and Kerberos
 log_message "Installing prerequisites for AD domain join and Kerberos"
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \\
-    sssd-ad sssd-tools realmd adcli samba-common-bin \\
-    oddjob oddjob-mkhomedir packagekit \\
-    libnss-sss libpam-sss \\
-    krb5-user
+sudo apt-get install -y sssd-ad sssd-tools realmd adcli samba-common-bin \\
+    oddjob oddjob-mkhomedir packagekit libnss-sss libpam-sss krb5-user
 
 # Install open-vm-tools for better VMware integration
 log_message "Installing open-vm-tools"
@@ -207,113 +233,64 @@ sudo timedatectl set-timezone UTC
 
 # Ensure system time is synced
 log_message "Installing and configuring chrony for time synchronization"
-if ! dpkg -s chrony &> /dev/null; then
-    sudo apt-get install -y chrony
-fi
+sudo apt-get install -y chrony
 sudo systemctl enable chrony
 sudo systemctl start chrony
 
-# Set domain controller as DNS server
+# Configure
+
+ DNS to use domain controller (example IP)
 log_message "Configuring DNS to use domain controller"
-if ! grep -q "^DNS=192.168.0.172" /etc/systemd/resolved.conf; then
-    sudo sed -i 's/^#DNS=/DNS=192.168.0.172/' /etc/systemd/resolved.conf
-    sudo systemctl restart systemd-resolved
-fi
+sudo sed -i 's/^#DNS=/DNS=192.168.0.52/' /etc/systemd/resolved.conf
+sudo systemctl restart systemd-resolved
 
 # Add domain controller to /etc/hosts
 log_message "Adding domain controller to /etc/hosts"
-if ! grep -q "192.168.0.172 dc.nextlevel.local dc" /etc/hosts; then
-    echo "192.168.0.172 dc.nextlevel.local dc" | sudo tee -a /etc/hosts
-fi
+echo "192.168.0.52 dc.nextlevel.local dc" | sudo tee -a /etc/hosts
 
-# Discover the domain
-log_message "Discovering the domain"
+# Discover and join the domain
+log_message "Discovering and joining the domain"
 realm discover nextlevel.local
+realm join -v -U Administrator nextlevel.local
 
-# Join the domain if not already joined
-if ! realm list | grep -q "nextlevel.local"; then
-    log_message "Joining the domain"
-    echo "vagrant" | sudo realm join -v -U vagrant nextlevel.local
-else
-    log_message "Already joined to the domain"
-fi
-
-# Configure SSSD
-log_message "Configuring SSSD"
-sudo tee /etc/sssd/sssd.conf > /dev/null <<EOT
-[sssd]
-domains = nextlevel.local
-config_file_version = 2
-services = nss, pam
-
-[domain/nextlevel.local]
-default_shell = /bin/bash
-krb5_store_password_if_offline = True
-cache_credentials = True
-krb5_realm = NEXTLEVEL.LOCAL
-realmd_tags = manages-system joined-with-adcli
-id_provider = ad
-fallback_homedir = /home/%u@%d
-ad_domain = nextlevel.local
-use_fully_qualified_names = True
-ldap_id_mapping = True
-access_provider = ad
-EOT
-
-# Set correct permissions for SSSD configuration
-sudo chmod 600 /etc/sssd/sssd.conf
-
-# Restart SSSD service
-log_message "Restarting SSSD service"
+# Restart services
+log_message "Restarting services"
 sudo systemctl restart sssd
-
-# Enable automatic home directory creation if not already enabled
-log_message "Enabling automatic home directory creation"
-if ! grep -q "pam_mkhomedir.so" /etc/pam.d/common-session; then
-    sudo pam-auth-update --enable mkhomedir
-fi
-
-# Configure Kerberos
-log_message "Configuring Kerberos"
-sudo tee /etc/krb5.conf > /dev/null <<EOT
-[libdefaults]
-    default_realm = NEXTLEVEL.LOCAL
-    dns_lookup_realm = true
-    dns_lookup_kdc = true
-    ticket_lifetime = 24h
-    renew_lifetime = 7d
-    forwardable = true
-
-[realms]
-    NEXTLEVEL.LOCAL = {
-        kdc = dc.nextlevel.local
-        admin_server = dc.nextlevel.local
-    }
-
-[domain_realm]
-    .nextlevel.local = NEXTLEVEL.LOCAL
-    nextlevel.local = NEXTLEVEL.LOCAL
-EOT
-
-log_message "Provisioning complete!"
-log_message "You can now login with domain users using the format: user@nextlevel.local"
 
 ```
 
-### **Key Network Considerations in Provisioning:**
+### **Key Features of the Script**:
 
-- The DNS configuration is set to use the **domain controller (192.168.0.172)**, ensuring smooth integration with Active Directory.
-- The **static IP address** of the **Windows Server** must remain unchanged to ensure continued connectivity and prevent domain access issues.
+- **System Update**: Ensures the VM is fully up-to-date.
+- **Package Installation**: Installs the tools needed to join an **Active Directory domain** (e.g., **realmd**, **SSSD**).
+- **DNS Configuration**: Sets the DNS to use the **Windows Server** domain controller’s static IP (`192.168.0.52`).
+- **Domain Joining**: Automates the process of joining the Ubuntu VM to the **AD domain**.
+
+### **Running the Provisioning Script**
+
+Once you’ve set up the provisioning script, Vagrant will automatically run it when you start the VMs:
+
+```bash
+vagrant up
+
+```
+
+If you modify the script and need to re-run it on existing VMs, you can use:
+
+```bash
+vagrant provision
+
+```
 
 ---
 
-Apologies for the incomplete response. I'll continue from where I left off and finish the documentation.
+## **5. Creating Windows Server VMs for Active Directory**
 
----
+Next, we’ll create a **Windows Server VM** to act as the **Domain Controller (DC)** for **Active Directory**. This server will manage domain authentication for the Linux VMs.
 
-## **4. Vagrantfile for Windows Server on Intel Macs**
+### **A. Vagrantfile for Windows Server on Intel Mac**
 
-For those using **Intel Macs**, you can run **Windows Server** via Vagrant using **VMware Fusion** or **VirtualBox** as the provider. Below is the Vagrantfile for provisioning a **Windows Server** for **Active Directory and DNS**.
+Here’s the **Vagrantfile** for provisioning a **Windows Server** VM with a static IP for **AD** and **DNS**.
 
 ```ruby
 # -*- mode: ruby -*-
@@ -338,16 +315,14 @@ end
 
 ```
 
-### **Importance of Static IP for Windows Server**
+### **Key Points**:
 
-- **Windows Server** must be assigned a **static IP** (`192.168.0.52` in this example) to ensure stable connectivity, especially when acting as a **Domain Controller**.
-- Without a static IP, **network services like DNS and AD** may fail to function properly, causing connection issues with other VMs in the environment.
+- **Static IP**: The Windows Server is assigned a static IP (`192.168.0.52`) to ensure that other VMs can reliably connect to it for domain services.
+- **Memory and CPU**: The VM is allocated **8048MB of RAM** and **2 CPUs** to ensure smooth operation as a domain controller.
 
----
+### **B. Active Directory Setup Script (setup_ad.ps1)**
 
-## **5. Active Directory Setup Script for Windows Server (setup_ad.ps1)**
-
-The following **PowerShell script** configures **Active Directory** on the Windows Server VM, promoting it to a **Domain Controller**.
+This **PowerShell script** configures the Windows Server as an **Active Directory Domain Controller** and adds **dummy users** for testing.
 
 ```powershell
 # Import the Active Directory module
@@ -397,39 +372,64 @@ Write-Host "Dummy user creation process completed."
 
 ```
 
-### **Key Considerations:**
+### **Key Features**:
 
-- This script configures **Active Directory** and creates **dummy users** for testing purposes.
-- The **static IP** for the **Windows Server** allows VMs joining the domain to have a consistent point of reference for DNS and authentication services.
+- **Active Directory Setup**: Configures the Windows Server as a **Domain Controller** for Active Directory.
+- **User Creation**: Adds dummy users to the domain for testing purposes.
 
----
+### **Running the Windows Server VM**
 
-## **6. Importance of Network Connectivity on Hypervisors**
+To start the **Windows Server VM**, run:
 
-### **Static IP Addresses and Network Stability**
+```bash
+vagrant up dc
 
-When managing VMs in a virtualized environment (whether on M1 or Intel Macs), maintaining **stable network connectivity** is vital. This is particularly crucial when integrating **Active Directory (AD)** and ensuring communication between VMs.
+```
 
-### **Key Points:**
-
-- **Public Network**: Use the `public_network` setting in Vagrant to allow communication between VMs and external networks, such as when the Linux VMs need to access the Windows Server AD services.
-- **Static IPs**: Assigning a **static IP address** to the Windows Server ensures that its network identity remains the same, preventing issues with domain services, DNS, and connectivity between VMs.
-- **Network Troubleshooting**: Ensure proper firewall configurations on both Windows and Linux machines. Check DNS settings to confirm that the correct IP addresses are being used for domain lookups.
-
-By ensuring proper **network setup** and configuring **static IPs**, you'll avoid common pitfalls in cross-VM communication and maintain a stable virtual environment.
+The provisioning script will automatically configure **Active Directory** and create the dummy users.
 
 ---
 
-## **7. Conclusion**
+## **6. Network Connectivity and Troubleshooting**
 
-This documentation provides a comprehensive guide to setting up **Linux and Windows Server VMs** using Vagrant on both **Apple Silicon** and **Intel Macs**, with an emphasis on maintaining **network stability**. Key topics covered include:
+### **A. Importance of Static IPs**
 
-- Using **UTM** to run **Windows Server** on Apple Silicon.
-- Assigning **static IP addresses** to VMs to avoid issues with **Active Directory**.
-- Ensuring that network settings are properly configured for communication between VMs.
+To maintain stable communication between the VMs, it is critical to assign **static IP addresses** to each machine, especially the **Windows Server** acting as a **Domain Controller**. Static IPs ensure that:
 
-### **Key Takeaways:**
+- Linux VMs can reliably connect to the **Windows Server** for **DNS resolution** and **Active Directory authentication**.
+- Network services remain stable without interruptions caused by IP address changes.
 
-- **VMware Fusion** is the recommended provider for Vagrant on **Apple Silicon**.
-- **Static IP addresses** are crucial for maintaining **network connectivity**, especially when managing domain services and DNS.
-- Properly configuring **network settings** ensures seamless communication between Linux and Windows VMs in a multi-OS environment.
+### **B. Configuring the Public Network**
+
+For VMs to communicate with each other and external networks, they must be configured to use the **public network**. This is achieved in the **Vagrantfile** with:
+
+```ruby
+config.vm.network "public_network", ip: "192.168.0.XX"
+
+```
+
+### **C. Common Issues and Troubleshooting Tips**
+
+1. **DNS Issues**: Ensure that the Ubuntu VMs are configured to use the Windows Server’s static IP as the **DNS server**.
+2. **Network Connectivity**: Check firewall settings on both **Windows Server** and **Linux VMs** to ensure that essential ports (e.g., **LDAP**, **DNS**, **SMB**) are open and traffic is allowed.
+3. **Domain Joining Issues**: If the Linux VMs cannot join the domain, check the **realm discover** command output for any configuration errors related to DNS or network settings.
+
+---
+
+## **7. Closing remarks**
+
+By following this guide, you now have the knowledge to:
+
+1. Install **Vagrant** and set up virtual machine providers.
+2. Create and manage **Linux** and **Windows Server** VMs.
+3. Configure **static IP addresses** and ensure network stability.
+4. Set up **Active Directory** and join Linux clients to a Windows Server domain.
+5. Troubleshoot common networking and domain integration issues.
+
+### **Key Takeaways**:
+
+- **Vagrant** provides a simple and automated way to manage development environments.
+- Proper **network configuration** (static IPs, DNS) is critical to maintaining connectivity between VMs.
+- Ensuring firewall and security configurations are correct will prevent many networking issues, especially when joining Linux machines to **Active Directory**.
+
+Now you’re ready to tackle more advanced configurations and workflows using Vagrant, whether it’s integrating more complex services, setting up continuous integration pipelines, or managing large-scale environments!

@@ -37,21 +37,21 @@ Before you can create VMs, you need to install Vagrant and a **provider** (the s
 
 1. **Install Homebrew** (a package manager for macOS):
     
-    ```bash
+    ```
     /bin/bash -c "$(curl -fsSL <https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh>)"
     
     ```
     
 2. **Install Vagrant**:
     
-    ```bash
+    ```
     brew install vagrant
     
     ```
     
 3. **Verify the installation**:
     
-    ```bash
+    ```
     vagrant --version
     
     ```
@@ -74,14 +74,14 @@ A **provider** is the tool Vagrant uses to create and run your VMs. The choice o
 
 1. **Install VMware Fusion** via Homebrew:
     
-    ```bash
+    ```
     brew install vmware-fusion
     
     ```
     
  **Install the Vagrant plugin** for VMware Fusion:
     
-    ```bash
+    ```
     vagrant plugin install vagrant-vmware-desktop
     
     ```
@@ -103,14 +103,14 @@ A **provider** is the tool Vagrant uses to create and run your VMs. The choice o
 
 - **Install VirtualBox**:
     
-    ```bash
+    ```
     brew install --cask virtualbox
     
     ```
     
 - **Verify the installation**:
     
-    ```bash
+    ```
     vboxmanage --version
     
     ```
@@ -168,7 +168,7 @@ end
 
 The provisioning script sets up each Ubuntu VM, installs required packages, and ensures it can join the **AD domain** while maintaining **network stability**.
 
-```bash
+```
 #!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status

@@ -1,0 +1,19 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box_check_update = false
+
+  # Windows Server for AD and DNS
+  config.vm.define "dc", primary: true do |dc|
+    dc.vm.box = "gusztavvargadr/windows-server"
+    dc.vm.hostname = "dc"
+    dc.vm.network "public_network", ip: "192.168.0.52"  # Changed to public_network
+    dc.vm.provider "vmware_fusion" do |v|
+      v.vmx["memsize"] = "8048"
+      v.vmx["numvcpus"] = "2"
+      v.gui = true
+    end
+    dc.vm.provision "shell", path: "scripts/setup_ad.ps1"
+  end
+end

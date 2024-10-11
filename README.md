@@ -1,12 +1,12 @@
 # **Hands-on Vagrant: Linux and Windows Server Integration on Apple Silicon**
 
-This documentation provides a comprehensive guide to setting up and managing virtual machines (VMs) using **Vagrant** on Apple Silicon (M1/M2) and Intel Macs. It covers critical steps such as setting up Windows and Linux VMs, integrating Linux machines with Active Directory (AD), and managing networking across VMs. A special focus is placed on ensuring stable **network connectivity** and configuring **static IP addresses** to prevent issues with domain integration and cross-machine communication.
+This documentation provides a comprehensive guide to setting up and managing virtual machines (VMs) using **Vagrant** on Apple Silicon (M1/M2) and Intel Macs. It covers critical steps such as setting up Windows and Linux VMs, integrating Linux machines with Active Directory (AD), and managing networking across VMs. A particular focus is placed on ensuring stable **network connectivity** and configuring **static IP addresses** to prevent domain integration and cross-machine communication issues.
 
 ---
 
 ## **1. Vagrant on Apple Silicon: Challenges and Solutions**
 
-Apple Silicon introduces some challenges when running certain virtualized environments like **Windows Server** due to the ARM64 architecture. To overcome these issues, it's essential to choose the right virtualization platform.
+Apple Silicon introduces some challenges when running specific virtualised environments like **Windows Server** due to the ARM64 architecture. To overcome these issues, choosing the right virtualisation platform is essential.
 
 ### **Using UTM for Windows Server on M1 Macs**
 
@@ -14,13 +14,15 @@ Since **Windows Server** does not natively run on Apple Silicon with tools like 
 
 ### **Steps to Install and Configure UTM for Windows Server**
 
-Follow this [guide](https://tcsfiles.blob.core.windows.net/documents/AIST3720Notes/WindowsServeronanM1Mac.html#:~:text=Configure%20the%20VM&text=In%20UTM%20choose%20Create%20a,for%20the%20Windows%20Server%20installer%20.) to install **Windows Server** on a Mac with an M1 processor using UTM:
+Follow this [guide]([https://tcsfiles.blob.core.windows.net/documents/AIST3720Notes/WindowsServeronanM1Mac.html#:~:text=Configure the VM&text=In UTM choose Create a,for the Windows Server installer .)](https://tcsfiles.blob.core.windows.net/documents/AIST3720Notes/WindowsServeronanM1Mac.html#:~:text=Configure%20the%20VM&text=In%20UTM%20choose%20Create%20a,for%20the%20Windows%20Server%20installer%20.)) to install **Windows Server** on a Mac with an M1 processor using UTM:
+
 1. **Download UTM** from the [official website](https://mac.getutm.app/).
 2. Create a new VM in UTM and select the **Windows Server ISO**.
 3. Configure the VM with enough **RAM** and **CPU resources** for optimal performance.
 4. Follow the instructions to install and configure **Windows Server** within UTM.
 
-#### **Why UTM?**
+### **Why UTM?**
+
 - **Windows Server** is not natively supported on M1 Macs via **VMware Fusion** or **VirtualBox**.
 - UTM provides stable emulation for Windows environments but requires proper configuration to avoid issues during setup.
 
@@ -61,9 +63,11 @@ Vagrant.configure("2") do |config|
     end
   end
 end
+
 ```
 
-#### **Network Considerations:**
+### **Network Considerations:**
+
 - **Public Network:** Each VM is assigned a **static IP** to ensure that it does not change, maintaining a stable connection between VMs and preventing issues with **Active Directory domain joining** or other network services.
 - Ensuring VMs can **communicate with each other and external networks** is essential when configuring services like **AD**.
 
@@ -96,10 +100,10 @@ sudo apt-get autoclean
 
 # Install necessary packages for AD domain join and Kerberos
 log_message "Installing prerequisites for AD domain join and Kerberos"
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    sssd-ad sssd-tools realmd adcli samba-common-bin \
-    oddjob oddjob-mkhomedir packagekit \
-    libnss-sss libpam-sss \
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \\
+    sssd-ad sssd-tools realmd adcli samba-common-bin \\
+    oddjob oddjob-mkhomedir packagekit \\
+    libnss-sss libpam-sss \\
     krb5-user
 
 # Install open-vm-tools for better VMware integration
@@ -156,7 +160,7 @@ default_shell = /bin/bash
 krb5_store_password_if_offline = True
 cache_credentials = True
 krb5_realm = NEXTLEVEL.LOCAL
-realmd_tags = manages-system joined-with-adcli 
+realmd_tags = manages-system joined-with-adcli
 id_provider = ad
 fallback_homedir = /home/%u@%d
 ad_domain = nextlevel.local
@@ -202,9 +206,11 @@ EOT
 
 log_message "Provisioning complete!"
 log_message "You can now login with domain users using the format: user@nextlevel.local"
+
 ```
 
 ### **Key Network Considerations in Provisioning:**
+
 - The DNS configuration is set to use the **domain controller (192.168.0.172)**, ensuring smooth integration with Active Directory.
 - The **static IP address** of the **Windows Server** must remain unchanged to ensure continued connectivity and prevent domain access issues.
 
@@ -238,9 +244,11 @@ Vagrant.configure("2") do |config|
     dc.vm.provision "shell", path: "scripts/setup_ad.ps1"
   end
 end
+
 ```
 
 ### **Importance of Static IP for Windows Server**
+
 - **Windows Server** must be assigned a **static IP** (`192.168.0.52` in this example) to ensure stable connectivity, especially when acting as a **Domain Controller**.
 - Without a static IP, **network services like DNS and AD** may fail to function properly, causing connection issues with other VMs in the environment.
 
@@ -263,7 +271,7 @@ $password = ConvertTo-SecureString $passwordString -AsPlainText -Force
 # Function to create a user
 function CreateUser($username, $firstname, $lastname) {
     $userPrincipalName = "$username@$domain"
-    
+
     try {
         # Check if the user already exists
         if (Get-ADUser -Filter {SamAccountName -eq $username} -ErrorAction Stop) {
@@ -295,12 +303,14 @@ CreateUser "agreen" "Alice" "Green"
 CreateUser "mwilson" "Mike" "Wilson"
 
 Write-Host "Dummy user creation process completed."
+
 ```
 
 ### **Key Considerations:**
+
 - This script configures **Active Directory** and creates **dummy users** for testing purposes.
 - The **static IP** for the **Windows Server** allows VMs joining the domain to have a consistent point of reference for DNS and authentication services.
-  
+
 ---
 
 ## **6. Importance of Network Connectivity on Hypervisors**
@@ -310,6 +320,7 @@ Write-Host "Dummy user creation process completed."
 When managing VMs in a virtualized environment (whether on M1 or Intel Macs), maintaining **stable network connectivity** is vital. This is particularly crucial when integrating **Active Directory (AD)** and ensuring communication between VMs.
 
 ### **Key Points:**
+
 - **Public Network**: Use the `public_network` setting in Vagrant to allow communication between VMs and external networks, such as when the Linux VMs need to access the Windows Server AD services.
 - **Static IPs**: Assigning a **static IP address** to the Windows Server ensures that its network identity remains the same, preventing issues with domain services, DNS, and connectivity between VMs.
 - **Network Troubleshooting**: Ensure proper firewall configurations on both Windows and Linux machines. Check DNS settings to confirm that the correct IP addresses are being used for domain lookups.
@@ -321,12 +332,13 @@ By ensuring proper **network setup** and configuring **static IPs**, you'll avoi
 ## **7. Conclusion**
 
 This documentation provides a comprehensive guide to setting up **Linux and Windows Server VMs** using Vagrant on both **Apple Silicon** and **Intel Macs**, with an emphasis on maintaining **network stability**. Key topics covered include:
+
 - Using **UTM** to run **Windows Server** on Apple Silicon.
 - Assigning **static IP addresses** to VMs to avoid issues with **Active Directory**.
 - Ensuring that network settings are properly configured for communication between VMs.
 
 ### **Key Takeaways:**
+
 - **VMware Fusion** is the recommended provider for Vagrant on **Apple Silicon**.
 - **Static IP addresses** are crucial for maintaining **network connectivity**, especially when managing domain services and DNS.
 - Properly configuring **network settings** ensures seamless communication between Linux and Windows VMs in a multi-OS environment.
-

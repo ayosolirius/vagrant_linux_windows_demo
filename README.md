@@ -26,6 +26,97 @@ Follow this [guide]([https://tcsfiles.blob.core.windows.net/documents/AIST3720No
 - **Windows Server** is not natively supported on M1 Macs via **VMware Fusion** or **VirtualBox**.
 - UTM provides stable emulation for Windows environments but requires proper configuration to avoid issues during setup.
 
+
+## **Getting Started: Installing Vagrant and Providers**
+
+Before you can create VMs, you need to install Vagrant and a **provider** (the software Vagrant uses to manage VMs). The provider depends on whether you’re using an **Apple Silicon** Mac or an **Intel** Mac.
+
+### **A. Installing Vagrant**
+
+### **Steps to Install Vagrant on macOS**
+
+1. **Install Homebrew** (a package manager for macOS):
+    
+    ```bash
+    /bin/bash -c "$(curl -fsSL <https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh>)"
+    
+    ```
+    
+2. **Install Vagrant**:
+    
+    ```bash
+    brew install vagrant
+    
+    ```
+    
+3. **Verify the installation**:
+    
+    ```bash
+    vagrant --version
+    
+    ```
+    
+    You should see the installed version of Vagrant, confirming that it’s ready to use.
+    
+
+---
+
+### **B. Choosing a Provider**
+
+A **provider** is the tool Vagrant uses to create and run your VMs. The choice of provider depends on whether you have an **Apple Silicon** or **Intel** Mac.
+
+### **1. For Apple Silicon (M1/M2 Macs): Use VMware Fusion or UTM**
+
+- **VMware Fusion** is a popular provider that works on Apple Silicon, though it doesn’t fully support **Windows Server** on M1/M2 Macs.
+- **UTM** is the recommended provider for running **Windows Server** on Apple Silicon, as it can emulate the x86 architecture needed for Windows environments.
+
+### **Installing VMware Fusion (for Apple Silicon)**:
+
+1. **Install VMware Fusion** via Homebrew:
+    
+    ```bash
+    brew install vmware-fusion
+    
+    ```
+    
+ **Install the Vagrant plugin** for VMware Fusion:
+    
+    ```bash
+    vagrant plugin install vagrant-vmware-desktop
+    
+    ```
+    
+    You’re now ready to use VMware Fusion as a provider with Vagrant on Apple Silicon.
+    
+
+### **Using UTM for Windows Server on Apple Silicon**:
+
+**UTM** is an open-source virtual machine manager for Apple Silicon that emulates x86 Windows environments. To install and configure Windows Server on UTM, follow [this guide](https://tcsfiles.blob.core.windows.net/documents/AIST3720Notes/WindowsServeronanM1Mac.html).
+
+---
+
+### **2. For Intel Macs: Use VMware Fusion or VirtualBox**
+
+- Intel-based Macs can use both **VMware Fusion** and **VirtualBox** as providers. Both options work well with Vagrant.
+
+### **Installing VirtualBox (for Intel Macs)**:
+
+- **Install VirtualBox**:
+    
+    ```bash
+    brew install --cask virtualbox
+    
+    ```
+    
+- **Verify the installation**:
+    
+    ```bash
+    vboxmanage --version
+    
+    ```
+    
+    You’re now ready to use VirtualBox as a provider for Vagrant.
+
 ---
 
 ## **2. Setting Up Vagrant on M1 for Linux VMs**
